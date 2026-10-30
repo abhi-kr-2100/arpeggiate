@@ -1,0 +1,30 @@
+{
+  "lockfileVersion": 2,
+  "configVersion": 1,
+  "workspaces": {
+    "": {
+      "name": "arpeggiate",
+    },
+    "@arpeggiate/core": {
+      "name": "@arpeggiate/core",
+      "version": "1.0.0-draft.0",
+    },
+    "@arpeggiate/react": {
+      "name": "@arpeggiate/react",
+      "version": "1.0.0-draft.0",
+      "dependencies": {
+        "@arpeggiate/core": "^1.0.0-draft.0",
+      },
+      "peerDependencies": {
+        "react": ">=16.8.0",
+      },
+    },
+  },
+  "packages": {
+    "@arpeggiate/core": ["@arpeggiate/core@workspace:@arpeggiate/core"],
+
+    "@arpeggiate/react": ["@arpeggiate/react@workspace:@arpeggiate/react"],
+
+    "react": ["react@19.3.1", "", {}, "sha512-QNhWdt7nrgVWWQG58QuGsAR3jv3Hbe4mb4vz7w2csnHavciZJgda1CPNaldF6eVxv90ud3jUXpKlHL69gO38yw=="],
+  }
+}

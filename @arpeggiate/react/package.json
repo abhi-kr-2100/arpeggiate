@@ -1,0 +1,16 @@
+{
+  "name": "@arpeggiate/react",
+  "version": "1.0.0-draft.0",
+  "type": "module",
+  "license": "LGPL-3.0-only",
+  "publishConfig": {
+    "access": "public",
+    "tag": "draft"
+  },
+  "dependencies": {
+    "@arpeggiate/core": "^1.0.0-draft.0"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0"
+  }
+}
