@@ -1,0 +1,12 @@
+{
+  "name": "arpeggiate",
+  "private": true,
+  "license": "LGPL-3.0-only",
+  "workspaces": [
+    "@arpeggiate/core",
+    "@arpeggiate/react"
+  ],
+  "scripts": {
+    "publish:draft": "bun publish --cwd @arpeggiate/core --tag draft --access public --tolerate-republish && bun publish --cwd @arpeggiate/react --tag draft --access public --tolerate-republish"
+  }
+}
