@@ -8,6 +8,7 @@
   ],
   "scripts": {
     "publish:draft": "bun publish --cwd @arpeggiate/core --tag draft --access public --tolerate-republish && bun publish --cwd @arpeggiate/react --tag draft --access public --tolerate-republish",
+    "build": "bun run scripts/build.ts",
     "test": "bun test",
     "typecheck": "bun x tsc --noEmit -p @arpeggiate/core/tsconfig.json && bun x tsc --noEmit -p @arpeggiate/react/tsconfig.json"
   },
