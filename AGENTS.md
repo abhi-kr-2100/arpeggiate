@@ -21,6 +21,7 @@ A user of this library needs only these abilities:
 - Define a mapping from keys to action IDs
 - Be informed when an action ID is invoked
 - Specify an element inside which this library is active
+- Reset the active keyboard state and sequence buffer
 
 Everything else must be private.
 

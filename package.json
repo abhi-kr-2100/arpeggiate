@@ -7,6 +7,12 @@
     "@arpeggiate/react"
   ],
   "scripts": {
-    "publish:draft": "bun publish --cwd @arpeggiate/core --tag draft --access public --tolerate-republish && bun publish --cwd @arpeggiate/react --tag draft --access public --tolerate-republish"
+    "publish:draft": "bun publish --cwd @arpeggiate/core --tag draft --access public --tolerate-republish && bun publish --cwd @arpeggiate/react --tag draft --access public --tolerate-republish",
+    "test": "bun test",
+    "typecheck": "bun run --cwd @arpeggiate/core --bun typecheck"
+  },
+  "devDependencies": {
+    "@happy-dom/global-registrator": "^21.0.4",
+    "happy-dom": "^21.0.4"
   }
 }

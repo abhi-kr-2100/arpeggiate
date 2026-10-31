@@ -30,3 +30,49 @@ The deterministic, unique string representation of any key, stroke, or sequence:
 3. The literal `+` key is preserved unambiguously (e.g. `"++Control"` -> `"Control++"`).
 4. Sequence strokes are separated by single spaces, with surrounding and repeated whitespace collapsed.
 
+---
+
+## 2. Data Structures & State Machine
+
+### Prefix Trie (`PrefixTrie`)
+A deterministic tree retrieval data structure that models all registered shortcut sequences. Each edge represents a canonical stroke string, and every path from the root represents a sequence prefix. The trie provides deterministic $O(L)$ traversal and lookup, where $L$ is the number of strokes in the sequence.
+
+### Trie Node (`TrieNode`)
+An individual node in the prefix trie representing a state in the sequence progression.
+- **Root Node**: The origin state representing an empty sequence buffer.
+- **Intermediate Node**: A node with outgoing child edges (`hasChildren === true`), indicating an in-progress sequence awaiting further strokes.
+- **Terminal Node**: A node carrying an assigned `actionId` (`isTerminal === true`), indicating the completion of a valid sequence. A node may be both intermediate and terminal if a shorter sequence forms a prefix of a longer sequence.
+
+### Sequence Buffer (`buffer`)
+An internal, in-memory array of canonical strokes entered so far in an ongoing sequence. The buffer persists across strokes while the user traverses intermediate trie nodes, and is reset when a terminal match occurs, an invalid stroke is received, or an explicit reset is triggered.
+
+### Active Keys (`activeKeys`)
+The internal tracking set of keys currently physically depressed on the keyboard, updated on `keydown` and removed on `keyup`.
+
+### Current Stroke Keys (`currentStrokeKeys`)
+The internal tracking set of all unique keys that have participated in the current simultaneous key stroke cycle. Flushed into a canonical stroke when all active keys are released or when a keydown creates an immediate terminal match.
+
+---
+
+## 3. Public API & Integration
+
+### Keymap (`Keymap`)
+An immutable key-value dictionary mapping shortcut sequence strings to action identifiers (`Readonly<Record<string, TActionId>>`).
+
+### Validated Keymap (`ValidatedKeymap`)
+A TypeScript mapped type that checks every key in a keymap at compile time using `ParseKeySequence`. Invalid strokes, malformed stroke syntax, or duplicate keys produce compile-time type errors containing descriptive error message literals.
+
+### Action ID (`actionId`)
+A unique, domain-specific string literal identifying the command, capability, or event triggered when a shortcut completes (e.g., `"palette.open"`, `"navigate.top"`, `"file.save"`).
+
+### Controller (`KeyboardController`)
+The teardown and lifecycle management object returned by `createKeyboard`. It is a callable cleanup function with attached helper properties:
+- `()` / `destroy()`: Detaches all keyboard event listeners from the target element and clears state.
+- `reset()`: Manually clears the sequence buffer and active key states without detaching listeners.
+- `[Symbol.dispose]()`: Implements the explicit resource management contract (enabling the `using` keyword in TypeScript/JavaScript).
+
+### Target (`EventTarget`)
+The DOM element or window to which event listeners (`keydown`, `keyup`) are attached and within which the keyboard shortcuts are active.
+
+### Config (`KeyboardConfig`)
+The configuration object passed to `createKeyboard`, containing `bindings` (the keymap), `target` (the event target), and `onAction` (the invocation callback).
