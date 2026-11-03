@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arpeggiate - Vanilla JS Demo</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --text-muted: #8b949e;
+      --accent: #58a6ff;
+      --accent-subtle: rgba(56, 139, 253, 0.15);
+      --success: #3fb950;
+      --warning: #d29922;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+    header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card-bg);
+    }
+    h1 { font-size: 1.25rem; font-weight: 600; color: #fff; }
+    .status-badge {
+      font-size: 0.85rem;
+      padding: 4px 10px;
+      border-radius: 12px;
+      background: var(--accent-subtle);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      overflow: hidden;
+    }
+    .reader-pane {
+      padding: 24px;
+      overflow-y: auto;
+      scroll-behavior: smooth;
+    }
+    .reader-pane h2 { font-size: 1.5rem; margin-bottom: 12px; color: #fff; }
+    .reader-pane p { font-size: 1rem; line-height: 1.7; margin-bottom: 18px; color: var(--text); }
+    .sidebar {
+      border-left: 1px solid var(--border);
+      background: var(--card-bg);
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+    }
+    .sidebar h3 { font-size: 0.95rem; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); }
+    .key-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-bottom: 20px; }
+    .key-table td { padding: 6px 4px; border-bottom: 1px solid var(--border); }
+    kbd {
+      font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, monospace;
+      font-size: 0.8rem;
+      background: #21262d;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 6px;
+      color: var(--accent);
+    }
+    .log-pane {
+      flex: 1;
+      background: #010409;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px;
+      overflow-y: auto;
+      font-family: ui-monospace, monospace;
+      font-size: 0.8rem;
+    }
+    .log-entry { margin-bottom: 6px; display: flex; justify-content: space-between; }
+    .log-time { color: var(--text-muted); }
+    .log-action { color: var(--success); font-weight: 500; }
+    /* WhichKey HUD */
+    #hud {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1c2128;
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      padding: 12px 18px;
+      z-index: 9999;
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 280px;
+    }
+    #hud.active { display: flex; }
+    .hud-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 4px;
+    }
+    .hud-continuations {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .hud-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Arpeggiate Vanilla Demo</h1>
+    <span class="status-badge" id="mode-badge">Mode: Normal</span>
+  </header>
+
+  <main>
+    <div class="reader-pane" id="scroll-target">
+      <h2>Continuous Repeat & Symmetrical Combos</h2>
+      <p>Hold <kbd>j</kbd> to scroll down continuously at 60fps/120fps display refresh rate without buffering delay. Hold <kbd>k</kbd> to scroll up.</p>
+      <p>Press <kbd>j+k</kbd> simultaneously to toggle <strong>Visual Mode</strong> instantly. Notice how ordinary character keys form symmetrical chords with zero modifier privilege.</p>
+      <p>Press <kbd>g</kbd> to observe the <strong>WhichKey HUD</strong> appear below, showing all sequences starting with prefix <kbd>g</kbd>. Then press <kbd>g</kbd> again to jump to the top, or <kbd>b</kbd> to jump to the bottom.</p>
+      <p>Press <kbd>Ctrl Ctrl</kbd> or <kbd>Space f</kbd> to trigger the Search action. Modifiers can be pressed sequentially just like letter keys.</p>
+      <hr style="border-color: var(--border); margin: 24px 0;" />
+      <div style="height: 1200px; display: flex; flex-direction: column; justify-content: space-between;">
+        <p><em>--- Top of long document ---</em></p>
+        <p><em>Keep holding <kbd>j</kbd> to test native event.repeat streaming...</em></p>
+        <p><em>--- Middle of long document ---</em></p>
+        <p><em>Press <kbd>g g</kbd> at any point to jump back to top.</em></p>
+        <p id="bottom-marker"><em>--- Bottom of long document ---</em></p>
+      </div>
+    </div>
+
+    <aside class="sidebar">
+      <h3>Key Bindings</h3>
+      <table class="key-table">
+        <tbody>
+          <tr><td><kbd>j</kbd> / <kbd>k</kbd></td><td>Scroll Down / Up (Repeat)</td></tr>
+          <tr><td><kbd>j+k</kbd></td><td>Toggle Visual Mode</td></tr>
+          <tr><td><kbd>g g</kbd></td><td>Jump to Top</td></tr>
+          <tr><td><kbd>g b</kbd></td><td>Jump to Bottom</td></tr>
+          <tr><td><kbd>Ctrl Ctrl</kbd></td><td>Double Ctrl Search</td></tr>
+          <tr><td><kbd>Space f</kbd></td><td>Find / Command Palette</td></tr>
+          <tr><td><kbd>Escape</kbd></td><td>Cancel Sequence / Clear</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Action Log</h3>
+      <div class="log-pane" id="log-pane"></div>
+    </aside>
+  </main>
+
+  <div id="hud">
+    <div class="hud-title" id="hud-prefix">Prefix: </div>
+    <div class="hud-continuations" id="hud-items"></div>
+  </div>
+
+  <!-- Load Arpeggiate Core via browser bundle -->
+  <script src="../../@arpeggiate/core/dist/index.global.js"></script>
+  <script>
+    const scrollTarget = document.getElementById("scroll-target");
+    const modeBadge = document.getElementById("mode-badge");
+    const logPane = document.getElementById("log-pane");
+    const hud = document.getElementById("hud");
+    const hudPrefix = document.getElementById("hud-prefix");
+    const hudItems = document.getElementById("hud-items");
+
+    let isVisualMode = false;
+
+    function logAction(actionId) {
+      const now = new Date().toTimeString().split(" ")[0];
+      const entry = document.createElement("div");
+      entry.className = "log-entry";
+      entry.innerHTML = `<span class="log-action">${actionId}</span><span class="log-time">${now}</span>`;
+      logPane.prepend(entry);
+    }
+
+    const { createKeyboard, defineKeymap } = window.ArpeggiateCore;
+
+    const bindings = defineKeymap({
+      "j": "reader.scrollDown",
+      "k": "reader.scrollUp",
+      "j+k": "reader.toggleVisual",
+      "g g": "reader.jumpTop",
+      "g b": "reader.jumpBottom",
+      "Ctrl Ctrl": "search.open",
+      "Space f": "palette.open",
+    });
+
+    const keyboard = createKeyboard({
+      bindings,
+      target: window,
+      onAction: (actionId, event) => {
+        logAction(actionId);
+
+        switch (actionId) {
+          case "reader.scrollDown":
+            scrollTarget.scrollTop += 45;
+            break;
+          case "reader.scrollUp":
+            scrollTarget.scrollTop -= 45;
+            break;
+          case "reader.toggleVisual":
+            isVisualMode = !isVisualMode;
+            modeBadge.textContent = isVisualMode ? "Mode: Visual (j+k)" : "Mode: Normal";
+            modeBadge.style.color = isVisualMode ? "var(--warning)" : "var(--accent)";
+            modeBadge.style.borderColor = isVisualMode ? "var(--warning)" : "var(--accent)";
+            break;
+          case "reader.jumpTop":
+            scrollTarget.scrollTop = 0;
+            break;
+          case "reader.jumpBottom":
+            scrollTarget.scrollTop = scrollTarget.scrollHeight;
+            break;
+        }
+      },
+    });
+
+    // Subscribe to WhichKey state transitions
+    keyboard.subscribe((state) => {
+      if (state.isBuffering) {
+        hud.classList.add("active");
+        hudPrefix.textContent = `Prefix: ${state.buffer.join(" ")}`;
+        hudItems.innerHTML = state.continuations
+          .map((item) => `<div class="hud-item"><kbd>${item.key}</kbd> <span>${item.actionId}</span></div>`)
+          .join("");
+      } else {
+        hud.classList.remove("active");
+      }
+    });
+  </script>
+</body>
+</html>

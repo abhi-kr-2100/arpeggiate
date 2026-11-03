@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arpeggiate - React 19 Headless Demo</title>
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: #111827;
+      --border: #1f2937;
+      --text: #e5e7eb;
+      --accent: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.2);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .app-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+    h1 { font-size: 1.5rem; margin-bottom: 8px; color: #fff; }
+    p.sub { color: #9ca3af; font-size: 0.9rem; margin-bottom: 24px; }
+    .badge-bar { display: flex; gap: 8px; margin-bottom: 24px; }
+    .badge {
+      font-size: 0.8rem;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: #1e293b;
+      border: 1px solid var(--border);
+      color: var(--accent);
+    }
+    .shortcuts-list {
+      background: #030712;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 24px;
+      font-size: 0.85rem;
+    }
+    .shortcuts-list div { display: flex; justify-content: space-between; margin-bottom: 8px; }
+    .shortcuts-list div:last-child { margin-bottom: 0; }
+    kbd {
+      background: #1f2937;
+      border: 1px solid #374151;
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--accent);
+      font-family: monospace;
+      font-size: 0.8rem;
+    }
+    /* Headless WhichKey HUD styled in user-space */
+    .which-key-hud {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e293b;
+      border: 1px solid var(--accent);
+      box-shadow: 0 10px 30px var(--accent-glow);
+      border-radius: 8px;
+      padding: 14px 20px;
+      min-width: 320px;
+      animation: fadeIn 0.15s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translate(-50%, 10px); }
+      to { opacity: 1; transform: translate(-50%, 0); }
+    }
+    .hud-header {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    .hud-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 6px;
+      font-size: 0.9rem;
+    }
+    .log-box {
+      background: #030712;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px;
+      font-family: monospace;
+      font-size: 0.8rem;
+      min-height: 80px;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+  </style>
+  <!-- Load React 19 and ReactDOM -->
+  <script src="https://unpkg.com/react@19/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@19/umd/react-dom.production.min.js"></script>
+  <!-- Load Arpeggiate Core and React Global Bundles -->
+  <script src="../../@arpeggiate/core/dist/index.global.js"></script>
+  <script src="../../@arpeggiate/react/dist/index.global.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script>
+    const { useState } = React;
+    const { ShortcutsProvider, useKeyboard, useWhichKey } = window.ArpeggiateReact;
+
+    // 1. User-Space WhichKey HUD Component
+    function WhichKeyHud() {
+      const state = useWhichKey();
+      if (!state.isBuffering) return null;
+
+      return React.createElement(
+        "div",
+        { className: "which-key-hud" },
+        React.createElement("div", { className: "hud-header" }, `Sequence Prefix: ${state.buffer.join(" ")}`),
+        state.continuations.map((item) =>
+          React.createElement(
+            "div",
+            { key: item.key, className: "hud-row" },
+            React.createElement("kbd", null, item.key),
+            React.createElement("span", null, `→ ${item.actionId}`)
+          )
+        )
+      );
+    }
+
+    // 2. Main Consumer Component
+    function KeyController({ lastAction }) {
+      const keyboard = useKeyboard();
+
+      return React.createElement(
+        "div",
+        null,
+        React.createElement("h1", null, "Headless React 19 Bindings"),
+        React.createElement("p", { className: "sub" }, "Zero CSS, zero bundled UI. All state driven via custom hooks."),
+        React.createElement(
+          "div",
+          { className: "shortcuts-list" },
+          React.createElement("div", null, React.createElement("span", null, "Continuous Navigation"), React.createElement("span", null, React.createElement("kbd", null, "j"), " / ", React.createElement("kbd", null, "k"))),
+          React.createElement("div", null, React.createElement("span", null, "Simultaneous Combo"), React.createElement("kbd", null, "j+k")),
+          React.createElement("div", null, React.createElement("span", null, "Sequential Chord"), React.createElement("span", null, React.createElement("kbd", null, "g g"), " or ", React.createElement("kbd", null, "g b"))),
+          React.createElement("div", null, React.createElement("span", null, "Double Modifiers"), React.createElement("kbd", null, "Ctrl Ctrl"))
+        ),
+        React.createElement("h3", { style: { fontSize: "0.85rem", marginBottom: "8px", color: "#9ca3af" } }, "Latest Triggered Action:"),
+        React.createElement("div", { className: "log-box" }, lastAction || "Press any defined shortcut...")
+      );
+    }
+
+    // 3. Root Application with ShortcutsProvider
+    function App() {
+      const [lastAction, setLastAction] = useState("");
+
+      const bindings = {
+        "j": "nav.down",
+        "k": "nav.up",
+        "j+k": "mode.toggleVisual",
+        "g g": "doc.jumpTop",
+        "g b": "doc.jumpBottom",
+        "Ctrl Ctrl": "palette.open",
+      };
+
+      return React.createElement(
+        ShortcutsProvider,
+        {
+          bindings: bindings,
+          onAction: (id) => setLastAction(`[${new Date().toLocaleTimeString()}] Dispatched: ${id}`),
+        },
+        React.createElement(
+          "div",
+          { className: "app-card" },
+          React.createElement(KeyController, { lastAction: lastAction }),
+          React.createElement(WhichKeyHud, null)
+        )
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
+  </script>
+</body>
+</html>
