@@ -1,2 +1,7 @@
 [test]
 preload = "./happydom.ts"
+coveragePathIgnorePatterns = [
+  "**/dist/**",
+  "**/node_modules/**"
+]
+
