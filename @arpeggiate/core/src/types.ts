@@ -51,7 +51,7 @@ export interface KeyboardConfig<TActionId extends string = string> {
   readonly bindings: Keymap<TActionId>;
   readonly onAction: (actionId: TActionId, event: KeyboardEvent) => void;
   readonly target: EventTarget;
-  readonly getChordSignal?: ChordSignalFactory;
+  readonly getChordSignal?: ChordSignalFactory | undefined;
 }
 
 // Controller Interface
