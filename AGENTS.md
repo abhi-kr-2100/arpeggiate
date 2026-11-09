@@ -13,7 +13,7 @@ Arpeggiate is a small, headless keyboard shortcuts engine built from mathematica
 
 ## 2. The Prime Directive: 100% Compile-Time Type Safety with 0 Runtime Overhead
 
-Non-Negotiable Constraint: All key validity, combo structure, sequential grammar, and keymap dictionaries must be strictly validated at compile time. The runtime cost of this validation must be zero.
+Non-Negotiable Constraint: All key validity, stroke structure, sequential grammar, and keymap dictionaries must be strictly validated at compile time. The runtime cost of this validation must be zero.
 
 ## 3. Minimal Public API
 
@@ -25,3 +25,7 @@ A user of this library needs only these abilities:
 Everything else must be private.
 
 Every public API (class, method, function, variable, etc.) must have a doc comment.
+
+## 4. Terminology Guidelines
+
+All contributors and AI agents must strictly adhere to the formal vocabulary defined in [GLOSSARY.md](GLOSSARY.md). Consistent terminology must be maintained across code, types, doc comments, test descriptions, and commit messages.
