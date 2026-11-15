@@ -28,7 +28,7 @@ A minimalist, headless keyboard shortcut library for JavaScript built from mathe
 
 ## Spec
 
-- Each feature must be recorded in [SPEC.md](SPEC.md).
+- Each feature must be recorded in its respective spec in [specs/](specs/) (e.g. [specs/core.md](specs/core.md)).
 - Spec should define requirements, not implementation details.
 - Do not append to the spec; rewrite the entire spec file fresh to ensure it is always fully correct and concise.
 
