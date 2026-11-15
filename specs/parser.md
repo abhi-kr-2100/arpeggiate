@@ -17,7 +17,7 @@ $$\operatorname{Parse}: \Sigma^* \to \mathcal{S}^+ \cup \{ \bot \}$$
 
 ### 1.2 Syntax & Delimiters
 
-- **Sequence Delimiter**: One or more whitespace characters separating strokes.
+- **Sequence Delimiter**: One or more whitespace characters separating consecutive strokes within a Sequence.
 - **Stroke Delimiter**: `+` joining keys within a stroke.
 - **Delimiter Collision Handling**:
   - The key `"+"` is written as isolated `"+"` or trailing `++` in strokes (e.g. `"Control++"` $\mapsto \{ \text{Control}, \text{+} \}$). Non-terminal `++` (e.g. `"Control++s"`) is invalid.
@@ -32,29 +32,19 @@ Malformed syntax maps to $\bot$.
 ### 2.1 Grammar & Syntax
 
 - Keys are exact identifiers; no aliases or synonym substitutions are permitted. Casing is strictly preserved.
-- Consecutive strokes are separated by whitespace; concurrent keys in a stroke are separated by `+`.
+- Consecutive strokes are separated by one or more whitespace characters; concurrent keys in a stroke are separated by `+`. Leading and trailing whitespace is permitted and ignored.
 - Delimiter-colliding keys:
   - `"+"` is parsed as `{ "+" }` when isolated, and as the key `"+"` when terminating a stroke with `++` (e.g. `"Control++"` $\to \{ \text{"Control"}, \text{"+"} \}$).
   - `"Space"` is parsed as the spacebar key identifier.
-- Invalid syntax (empty strings, dangling or non-terminal adjacent delimiters like `"+s"`, `"Control+"`, `"Control++s"`) must be rejected with an error ($\bot$).
+- Invalid syntax (empty strings, sequences containing only whitespace, dangling or non-terminal adjacent delimiters like `"+s"`, `"Control+"`, `"Control++s"`) must be rejected with an error ($\bot$).
 
-### 2.2 Compile-Time Parsing
+### 2.2 Runtime Parsing
 
-- String literals must be validated and parsed at compile time via the type system, producing strongly typed Sequences with zero runtime parsing overhead.
-- Syntactically invalid literals must produce compile-time type errors.
-- Must parse the following literals at compile time:
-  1. `"Control+s"` $\to$ `[{"Control", "s"}]`
-  2. `"j"` $\to$ `[{"j"}]`
-  3. `"g g"` $\to$ `[{"g"}, {"g"}]`
-  4. `"Control+Shift+p"` $\to$ `[{"Control", "Shift", "p"}]`
-  5. `"AudioVolumeUp10"` $\to$ `[{"AudioVolumeUp10"}]`
-  6. `"Control++"` $\to$ `[{"Control", "+"}]`
-  7. `"Control+Space"` $\to$ `[{"Control", "Space"}]`
-  8. `"+"` $\to$ `[{"+"}]`
-  9. `"Space"` $\to$ `[{"Space"}]`
-
-### 2.3 Runtime Parsing
-
-- Dynamic values not known at compile time must be parsed at runtime with identical validation and semantics.
+- The Parser must validate a Sequence String and transform it into a Sequence during program execution.
 - Execution must be linear $O(L)$ relative to string length $L$, allocation-minimal, and free of regex backtracking.
-- Syntactically invalid dynamic strings must throw an error.
+- Syntactically invalid strings must throw an error.
+
+### 2.3 Browser & Environment Support
+
+- Direct browser usage via a `<script>` tag is supported by a standalone minified bundle exposing `window.arpeggiate`.
+- Module usage is supported via an ES module bundle and Node16/NodeNext-compatible type declarations.
