@@ -17,11 +17,11 @@ $$\operatorname{Parse}: \Sigma^* \to \mathcal{S}^+ \cup \{ \bot \}$$
 
 ### 1.2 Syntax & Delimiters
 
-- **Sequence Delimiter**: One or more whitespace characters separating strokes.
+- **Sequence Delimiter**: Space separating strokes.
 - **Stroke Delimiter**: `+` joining keys within a stroke.
 - **Delimiter Collision Handling**:
   - The key `"+"` is written as isolated `"+"` or trailing `++` in strokes (e.g. `"Control++"` $\mapsto \{ \text{Control}, \text{+} \}$). Non-terminal `++` (e.g. `"Control++s"`) is invalid.
-  - The spacebar key is written as `"Space"` to avoid collision with whitespace delimiters.
+  - The spacebar key is written as `"Space"` to avoid collision with the space delimiter.
 
 Malformed syntax maps to $\bot$.
 
@@ -32,11 +32,11 @@ Malformed syntax maps to $\bot$.
 ### 2.1 Grammar & Syntax
 
 - Keys are exact identifiers; no aliases or synonym substitutions are permitted. Casing is strictly preserved.
-- Consecutive strokes are separated by whitespace; concurrent keys in a stroke are separated by `+`.
+- Consecutive strokes are separated by space; concurrent keys in a stroke are separated by `+`.
 - Delimiter-colliding keys:
   - `"+"` is parsed as `{ "+" }` when isolated, and as the key `"+"` when terminating a stroke with `++` (e.g. `"Control++"` $\to \{ \text{"Control"}, \text{"+"} \}$).
   - `"Space"` is parsed as the spacebar key identifier.
-- Invalid syntax (empty strings, dangling or non-terminal adjacent delimiters like `"+s"`, `"Control+"`, `"Control++s"`) must be rejected with an error ($\bot$).
+- Invalid syntax (empty strings, dangling or non-terminal adjacent delimiters like `"+s"`, `"Control+"`, `"Control++s"`, `" g"`, `"g "`, `"g  g"`) must be rejected with an error ($\bot$).
 
 ### 2.2 Compile-Time Parsing
 
@@ -58,3 +58,8 @@ Malformed syntax maps to $\bot$.
 - Dynamic values not known at compile time must be parsed at runtime with identical validation and semantics.
 - Execution must be linear $O(L)$ relative to string length $L$, allocation-minimal, and free of regex backtracking.
 - Syntactically invalid dynamic strings must throw an error.
+
+### 2.4 Browser & Environment Support
+
+- Direct browser usage via a `<script>` tag is supported by a standalone minified bundle exposing `window.arpeggiate`.
+- Module usage is supported via ES module and CommonJS bundles and Node16/NodeNext-compatible type declarations.
