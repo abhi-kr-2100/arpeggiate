@@ -6,7 +6,7 @@ Keyboard shortcuts in Arpeggiate follow a strict structural hierarchy: Key -> St
 
 ### Key
 
-- An individual key identifier (e.g. `"a"`, `"Enter"`, `"Escape"`, `"Control"`, `"Shift"`).
+- An individual key identifier (e.g. `"a"`, `"Enter"`, `"Escape"`, `"Control"`, `"Shift"`, `"Space"`, `"+"`).
 - All keys are symmetric; modifier keys possess no special status.
 
 ### Stroke
@@ -19,6 +19,15 @@ Keyboard shortcuts in Arpeggiate follow a strict structural hierarchy: Key -> St
 
 - An ordered succession of one or more strokes (e.g. `"g g"`, `"Control+k Control+s"`).
 - Executed in sequential progression.
+
+## Parser Concepts
+
+- **Stroke Delimiter**: The character (`+`) separating concurrent Keys within a Stroke.
+- **Sequence Delimiter**: The whitespace separating consecutive Strokes within a Sequence.
+- **Sequence String**: A serialized string representation of a Sequence adhering to Stroke Delimiter and Sequence Delimiter syntax.
+- **Parser**: The subsystem that validates a Sequence String and transforms it into a Sequence.
+- **Compile-Time Parsing**: Static verification and transformation of a Sequence String literal at compile time via the type system.
+- **Runtime Parsing**: Dynamic verification and transformation of a Sequence String during program execution.
 
 ## System Concepts
 
