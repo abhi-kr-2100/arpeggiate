@@ -3,6 +3,27 @@
   "version": "1.0.0-draft.0",
   "type": "module",
   "license": "LGPL-3.0-only",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "unpkg": "./dist/arpeggiate.min.js",
+  "jsdelivr": "./dist/arpeggiate.min.js",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "bun run build:browser && bun run build:esm && bun run build:types",
+    "build:browser": "bun build --target=browser --format=iife --minify --outfile=./dist/arpeggiate.min.js ./src/browser.ts",
+    "build:esm": "bun build --target=browser --format=esm --minify --outfile=./dist/index.js ./src/index.ts",
+    "build:types": "tsc --project ./tsconfig.json",
+    "prepublishOnly": "bun run build"
+  },
   "publishConfig": {
     "access": "public",
     "tag": "draft"

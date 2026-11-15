@@ -23,10 +23,9 @@ Keyboard shortcuts in Arpeggiate follow a strict structural hierarchy: Key -> St
 ## Parser Concepts
 
 - **Stroke Delimiter**: The character (`+`) separating concurrent Keys within a Stroke.
-- **Sequence Delimiter**: The whitespace separating consecutive Strokes within a Sequence.
-- **Sequence String**: A serialized string representation of a Sequence adhering to Stroke Delimiter and Sequence Delimiter syntax.
+- **Sequence Delimiter**: One or more whitespace characters separating consecutive Strokes within a Sequence.
+- **Sequence String**: A serialized string representation of a Sequence adhering to Stroke Delimiter and Sequence Delimiter syntax, with optional leading and trailing whitespace.
 - **Parser**: The subsystem that validates a Sequence String and transforms it into a Sequence.
-- **Compile-Time Parsing**: Static verification and transformation of a Sequence String literal at compile time via the type system.
 - **Runtime Parsing**: Dynamic verification and transformation of a Sequence String during program execution.
 
 ## System Concepts
