@@ -63,8 +63,8 @@ If $\sigma_1, \sigma_2 \in \operatorname{dom}(M)$ such that $\sigma_1 \sqsubset 
 
 - **Key**: String identifier (e.g. `"a"`, `"Enter"`, `"Escape"`, `"Control"`).
 - **Stroke**: Keys joined with `+` (e.g. `"Control+s"`, `"j+k"`). Order-invariant; supports $N \ge 1$ concurrent keys.
-- **Sequence**: Strokes separated by whitespace (e.g. `"g g"`, `"Control+k Control+s"`).
-- Invalid syntax must be rejected with an error.
+- **Sequence**: Strokes separated by one or more whitespace characters (e.g. `"g g"`, `"Control+k Control+s"`, `"g\tg"`). Leading and trailing whitespace is permitted and ignored.
+- Invalid syntax must be rejected with an error. Empty sequences or sequences consisting entirely of whitespace are rejected with an error.
 
 ### 2.2 Shortcut Map Configuration
 
